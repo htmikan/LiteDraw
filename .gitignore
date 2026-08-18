@@ -1,0 +1,8 @@
+/.vs/
+/out/
+/build/
+/x64/
+/LiteDraw/
+/*.user
+/*.VC.db
+/*.VC.VC.opendb
