@@ -8,8 +8,12 @@ endif()
 
 add_executable(LiteDraw WIN32
     src/main.cpp
+    src/export_codec.cpp
     src/LiteDraw.rc
 )
+
+find_package(libjpeg-turbo CONFIG REQUIRED)
+find_package(libdeflate CONFIG REQUIRED)
 
 target_compile_features(LiteDraw PRIVATE cxx_std_20)
 target_compile_definitions(LiteDraw PRIVATE
@@ -30,6 +34,8 @@ target_link_libraries(LiteDraw PRIVATE
     shell32
     ole32
     uuid
+    $<IF:$<TARGET_EXISTS:libjpeg-turbo::jpeg>,libjpeg-turbo::jpeg,libjpeg-turbo::jpeg-static>
+    $<IF:$<TARGET_EXISTS:libdeflate::libdeflate_shared>,libdeflate::libdeflate_shared,libdeflate::libdeflate_static>
 )
 
 if(MSVC)
@@ -38,11 +44,9 @@ if(MSVC)
     set_property(TARGET LiteDraw PROPERTY VS_GLOBAL_ApplicationManifest "${CMAKE_CURRENT_SOURCE_DIR}/src/LiteDraw.manifest")
 endif()
 
-add_custom_command(TARGET LiteDraw POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:LiteDraw>/assets/fonts"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_CURRENT_SOURCE_DIR}/assets/fonts/materialdesignicons-webfont.ttf"
-        "$<TARGET_FILE_DIR:LiteDraw>/assets/fonts/materialdesignicons-webfont.ttf"
+target_include_directories(LiteDraw PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/src"
+    "${CMAKE_CURRENT_SOURCE_DIR}/assets/fonts"
 )
 
 set_property(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" PROPERTY VS_STARTUP_PROJECT LiteDraw)

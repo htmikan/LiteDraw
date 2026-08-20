@@ -3,6 +3,9 @@
 /build/
 /x64/
 /LiteDraw/
+/vcpkg_installed/
+/assets/icons/
+/scripts/
 /*.user
 /*.VC.db
 /*.VC.VC.opendb

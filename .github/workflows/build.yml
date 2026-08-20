@@ -1,0 +1,45 @@
+name: Build
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build Release x64
+        shell: pwsh
+        run: |
+          $msbuild = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" `
+            -latest -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe | Select-Object -First 1
+          if (-not $msbuild) { throw "MSBuild not found" }
+          & $msbuild LiteDraw.vcxproj `
+            /p:Configuration=Release `
+            /p:Platform=x64 `
+            /p:PlatformToolset=v143 `
+            /p:VcpkgEnableManifest=true `
+            /restore
+
+      - name: Upload LiteDraw.exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: LiteDraw-Release-x64
+          path: |
+            x64/Release/LiteDraw.exe
+            x64/Release/deflate.dll
+            x64/Release/jpeg8.dll
+          if-no-files-found: error

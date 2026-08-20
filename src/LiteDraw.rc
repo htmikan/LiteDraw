@@ -1,2 +1,6 @@
 ﻿#include <windows.h>
 #include "resource.h"
+
+IDI_LITEDRAW ICON "app.ico"
+IDR_FONT_MDI RCDATA "materialdesignicons-webfont.ttf"
+IDR_MDI_CODEPOINTS RCDATA "mdi-codepoints.txt"
